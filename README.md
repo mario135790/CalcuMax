@@ -1,6 +1,7 @@
 
 # CalcuMax
 <img height="300" alt="Logo CalcuMax" src="https://github.com/user-attachments/assets/a7d1d1d4-0b47-45ca-aef6-9c3986e419c1" />
+
 CalcuMax es una aplicación de escritorio desarrollada en C# con Windows Forms que combina simulaciones físicas visuales con razonamiento matemático paso a paso, pensada para estudiantes que quieren entender cómo el Cálculo Diferencial e Integral se aplica a problemas reales.
 
 ## ¿Qué incluye?
