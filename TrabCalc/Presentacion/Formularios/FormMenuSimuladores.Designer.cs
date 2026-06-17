@@ -24,6 +24,7 @@ namespace TrabCalc
             this.guna2PictureBox2 = new Guna.UI2.WinForms.Guna2PictureBox();
             this.guna2PictureBox3 = new Guna.UI2.WinForms.Guna2PictureBox();
             this.btnVolver = new Guna.UI2.WinForms.Guna2GradientButton();
+            this.btnFundamento = new Guna.UI2.WinForms.Guna2GradientButton();
             this.btnBombaAgua = new Guna.UI2.WinForms.Guna2GradientButton();
             this.btnMovimiento = new Guna.UI2.WinForms.Guna2GradientButton();
             this.lblIntegrales = new System.Windows.Forms.Label();
@@ -54,6 +55,7 @@ namespace TrabCalc
             this.pnlPrincipal.Controls.Add(this.guna2PictureBox2);
             this.pnlPrincipal.Controls.Add(this.guna2PictureBox3);
             this.pnlPrincipal.Controls.Add(this.btnVolver);
+            this.pnlPrincipal.Controls.Add(this.btnFundamento);
             this.pnlPrincipal.Controls.Add(this.btnBombaAgua);
             this.pnlPrincipal.Controls.Add(this.btnMovimiento);
             this.pnlPrincipal.Controls.Add(this.lblIntegrales);
@@ -119,6 +121,33 @@ namespace TrabCalc
             this.btnVolver.Text = "Volver";
             this.btnVolver.Click += new System.EventHandler(this.btnVolver_Click);
             this.btnVolver.MouseEnter += new System.EventHandler(this.button1_MouseEnter);
+            // 
+            // btnFundamento
+            // 
+            this.btnFundamento.AutoRoundedCorners = true;
+            this.btnFundamento.BackColor = System.Drawing.Color.Transparent;
+            this.btnFundamento.BorderColor = System.Drawing.Color.SeaGreen;
+            this.btnFundamento.BorderRadius = 23;
+            this.btnFundamento.BorderThickness = 3;
+            this.btnFundamento.CheckedState.Parent = this.btnFundamento;
+            this.btnFundamento.CustomImages.Parent = this.btnFundamento;
+            this.btnFundamento.FillColor = System.Drawing.Color.LightGray;
+            this.btnFundamento.FillColor2 = System.Drawing.Color.MediumSeaGreen;
+            this.btnFundamento.Font = new System.Drawing.Font("Arial", 16F);
+            this.btnFundamento.ForeColor = System.Drawing.Color.Black;
+            this.btnFundamento.HoverState.BorderColor = System.Drawing.Color.SeaGreen;
+            this.btnFundamento.HoverState.FillColor = System.Drawing.Color.AliceBlue;
+            this.btnFundamento.HoverState.FillColor2 = System.Drawing.Color.MediumSeaGreen;
+            this.btnFundamento.HoverState.ForeColor = System.Drawing.Color.White;
+            this.btnFundamento.HoverState.Parent = this.btnFundamento;
+            this.btnFundamento.Location = new System.Drawing.Point(252, 267);
+            this.btnFundamento.Name = "btnFundamento";
+            this.btnFundamento.ShadowDecoration.Parent = this.btnFundamento;
+            this.btnFundamento.Size = new System.Drawing.Size(290, 49);
+            this.btnFundamento.TabIndex = 69;
+            this.btnFundamento.Text = "Fundamento matematico";
+            this.btnFundamento.Click += new System.EventHandler(this.btnFundamento_Click);
+            this.btnFundamento.MouseEnter += new System.EventHandler(this.button1_MouseEnter);
             // 
             // btnBombaAgua
             // 
@@ -253,6 +282,7 @@ namespace TrabCalc
         private Guna.UI2.WinForms.Guna2GradientButton btnMovimiento;
         private Guna.UI2.WinForms.Guna2GradientButton btnBombaAgua;
         private Guna.UI2.WinForms.Guna2GradientButton btnVolver;
+        private Guna.UI2.WinForms.Guna2GradientButton btnFundamento;
         private Guna.UI2.WinForms.Guna2PictureBox guna2PictureBox3;
         private Guna.UI2.WinForms.Guna2PictureBox guna2PictureBox2;
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace TrabCalc.Servicios.Historial
 {
@@ -9,6 +10,12 @@ namespace TrabCalc.Servicios.Historial
         public string Tipo { get; set; }
         public string Resumen { get; set; }
         public string ResultadoCorto { get; set; }
+        public Dictionary<string, string> Parametros { get; set; }
+
+        public bool TieneParametros
+        {
+            get { return Parametros != null && Parametros.Count > 0; }
+        }
 
         public override string ToString()
         {

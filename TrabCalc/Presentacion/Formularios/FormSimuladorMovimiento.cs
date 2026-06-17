@@ -3,6 +3,7 @@ using Guna.UI2.WinForms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -1258,7 +1259,7 @@ namespace TrabCalc
                 return;
             }
 
-            using (FormHistorialSimulaciones historial = new FormHistorialSimulaciones())
+            using (FormHistorialSimulaciones historial = new FormHistorialSimulaciones(this))
             {
                 historial.ShowDialog(this);
             }
@@ -1268,7 +1269,141 @@ namespace TrabCalc
         {
             string tipo = esAceleracionConstante ? "Aceleración constante" : "Aceleración variable";
             string resultadoCorto = $"Distancia: {FormatoUnidades.Distancia(distanciaRecorrida)} | Velocidad final: {FormatoUnidades.VelocidadKmh(MsAKmh(velocidadFinal))} | Trabajo: {FormatoUnidades.TrabajoKj(trabajoRealizado)}";
-            HistorialSimulaciones.Agregar("Integrales", tipo, resultadoCorto, ConstruirResumenResultados());
+            HistorialSimulaciones.Agregar("Integrales", tipo, resultadoCorto, ConstruirResumenResultados(), ConstruirParametrosHistorial());
+        }
+
+        private Dictionary<string, string> ConstruirParametrosHistorial()
+        {
+            return new Dictionary<string, string>
+            {
+                { "origen", "movimiento" },
+                { "tipoMovimiento", esAceleracionConstante ? "constante" : "variable" },
+                { "velocidadInicialKmh", GuardarNumero(MsAKmh(VelocidadInicial)) },
+                { "aceleracionMaxima", GuardarNumero(Aceleracion) },
+                { "aceleracionMinima", GuardarNumero(AceleracionMin) },
+                { "tiempoTotal", GuardarNumero(TiempoTotal) },
+                { "velocidadMaximaKmh", GuardarNumero(VelocidadMaxima) },
+                { "masa", GuardarNumero(Masa) },
+                { "kResistencia", GuardarNumero(KResistencia) }
+            };
+        }
+
+        public bool ReabrirDesdeHistorial(RegistroSimulacion registro)
+        {
+            if (registro == null || !registro.TieneParametros)
+            {
+                return false;
+            }
+
+            if (!TryObtenerParametro(registro, "tipoMovimiento", out string tipoMovimiento)
+                || !TryLeerParametro(registro, "velocidadInicialKmh", out double velocidadInicialKmh)
+                || !TryLeerParametro(registro, "aceleracionMaxima", out double aceleracionMaxima)
+                || !TryLeerParametro(registro, "tiempoTotal", out double tiempoTotalGuardado)
+                || !TryLeerParametro(registro, "velocidadMaximaKmh", out double velocidadMaximaKmh)
+                || !TryLeerParametro(registro, "masa", out double masaGuardada)
+                || !TryLeerParametro(registro, "kResistencia", out double kGuardada))
+            {
+                return false;
+            }
+
+            ForceStop();
+
+            if (string.Equals(tipoMovimiento, "variable", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!TryLeerParametro(registro, "aceleracionMinima", out double aceleracionMinima))
+                {
+                    return false;
+                }
+
+                AplicarParametrosVar(new ParametrosAceleracionVariable
+                {
+                    VelocidadInicialKmh = velocidadInicialKmh,
+                    AceleracionMaxima = aceleracionMaxima,
+                    AceleracionMinima = aceleracionMinima,
+                    TiempoTotal = tiempoTotalGuardado,
+                    VelocidadMaximaKmh = velocidadMaximaKmh,
+                    Masa = masaGuardada,
+                    KResistencia = kGuardada
+                });
+                SeleccionarMovimientoDesdeHistorial(1);
+            }
+            else
+            {
+                AplicarParametros(new ParametrosAceleracionConstante
+                {
+                    VelocidadInicialKmh = velocidadInicialKmh,
+                    Aceleracion = aceleracionMaxima,
+                    TiempoTotal = tiempoTotalGuardado,
+                    VelocidadMaximaKmh = velocidadMaximaKmh,
+                    Masa = masaGuardada,
+                    KResistencia = kGuardada
+                });
+                SeleccionarMovimientoDesdeHistorial(0);
+            }
+
+            PrepararReaperturaDesdeHistorial();
+            DialogoApp.MostrarInformacion(this, "Simulacion reabierta. Puedes ajustar parametros o volver a simular.", "Historial");
+            return true;
+        }
+
+        private void SeleccionarMovimientoDesdeHistorial(int indice)
+        {
+            if (cmbMovimiento.Items.Count <= indice)
+            {
+                return;
+            }
+
+            restaurandoMovimiento = true;
+            cmbMovimiento.SelectedIndex = indice;
+            indiceMovimientoConfirmado = indice;
+            restaurandoMovimiento = false;
+        }
+
+        private void PrepararReaperturaDesdeHistorial()
+        {
+            TiempoActual = 0;
+            pistaOffset = 0;
+            fondoOffset = 0;
+            aceleracionVisualActual = 0;
+            distanciaRecorrida = 0;
+            velocidadFinal = VelocidadInicial;
+            trabajoRealizado = 0;
+            simulacionActiva = false;
+            isPaused = false;
+            btnPausa.Enabled = false;
+            btnPausa.Text = "Pausar";
+            btnMostrarProcedimiento.Enabled = false;
+            btnCopiarResultados.Visible = false;
+            btnCopiarResultados.Enabled = false;
+            btnExportarResultados.Visible = false;
+            btnExportarResultados.Enabled = false;
+            lblSimulacionCompletada.Visible = false;
+            cmbMovimiento.Enabled = true;
+            listaTiempos.Clear();
+            listaVelocidades.Clear();
+            listaAceleraciones.Clear();
+            listaTrabajos.Clear();
+            LimpiarGraficas();
+            ActualizarResultados();
+            DibujarAnimacion();
+        }
+
+        private bool TryObtenerParametro(RegistroSimulacion registro, string clave, out string valor)
+        {
+            valor = null;
+            return registro.Parametros != null && registro.Parametros.TryGetValue(clave, out valor);
+        }
+
+        private bool TryLeerParametro(RegistroSimulacion registro, string clave, out double valor)
+        {
+            valor = 0;
+            return TryObtenerParametro(registro, clave, out string texto)
+                && double.TryParse(texto, NumberStyles.Float, CultureInfo.InvariantCulture, out valor);
+        }
+
+        private string GuardarNumero(double valor)
+        {
+            return valor.ToString("R", CultureInfo.InvariantCulture);
         }
 
         private string ConstruirResumenResultados()

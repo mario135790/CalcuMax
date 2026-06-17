@@ -90,6 +90,17 @@ namespace TrabCalc
             SeleccionarOpcion(0);
         }
 
+        private void btnFundamento_Click(object sender, EventArgs e)
+        {
+            if (isAnimating) return;
+
+            PlaySound("snd/Boton.wav");
+            using (FormFundamentoMatematico fundamento = new FormFundamentoMatematico())
+            {
+                fundamento.ShowDialog(this);
+            }
+        }
+
         private void SeleccionarOpcion(int opcion)
         {
             if (isAnimating) return;

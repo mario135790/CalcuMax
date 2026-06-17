@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using TrabCalc.Negocios.Recipientes;
 using TrabCalc.Servicios;
+using TrabCalc.Servicios.Exportacion;
 
 namespace TrabCalc
 {
@@ -13,6 +14,7 @@ namespace TrabCalc
         private readonly Figura3D figura;
         private readonly ParametrosRecipiente parametros;
         private readonly Panel panelContenido = new Panel();
+        private readonly DocumentoProcedimiento documento = new DocumentoProcedimiento();
         private readonly Timer timerEntrada = new Timer();
         private readonly Timer timerSalida = new Timer();
         private bool isAnimating;
@@ -70,7 +72,43 @@ namespace TrabCalc
             };
             btnSalir.Click += btnSalir_Click;
 
+            Guna2GradientButton btnCopiar = new Guna2GradientButton
+            {
+                AutoRoundedCorners = true,
+                BackColor = Color.Transparent,
+                BorderColor = Color.RoyalBlue,
+                BorderRadius = 23,
+                BorderThickness = 3,
+                FillColor = Color.LightGray,
+                FillColor2 = Color.DodgerBlue,
+                Font = new Font("Arial", 18F),
+                ForeColor = Color.Black,
+                Location = new Point(170, 617),
+                Size = new Size(150, 49),
+                Text = "Copiar"
+            };
+            btnCopiar.Click += btnCopiar_Click;
+
+            Guna2GradientButton btnPdf = new Guna2GradientButton
+            {
+                AutoRoundedCorners = true,
+                BackColor = Color.Transparent,
+                BorderColor = Color.SeaGreen,
+                BorderRadius = 23,
+                BorderThickness = 3,
+                FillColor = Color.LightGray,
+                FillColor2 = Color.MediumSeaGreen,
+                Font = new Font("Arial", 18F),
+                ForeColor = Color.Black,
+                Location = new Point(330, 617),
+                Size = new Size(150, 49),
+                Text = "PDF"
+            };
+            btnPdf.Click += btnPdf_Click;
+
             fondo.Controls.Add(btnSalir);
+            fondo.Controls.Add(btnCopiar);
+            fondo.Controls.Add(btnPdf);
             fondo.Controls.Add(panelContenido);
             Controls.Add(fondo);
 
@@ -85,6 +123,7 @@ namespace TrabCalc
         private void MostrarProcedimiento()
         {
             panelContenido.Controls.Clear();
+            documento.Limpiar();
             int y = 20;
             double caudalSegundo = parametros.CaudalPorSegundo;
 
@@ -262,6 +301,7 @@ namespace TrabCalc
 
         private void AgregarTitulo(string texto, ref int y)
         {
+            documento.AgregarTitulo(texto);
             Label label = CrearLabel(texto, new Font("Arial", 15, FontStyle.Bold), Color.MidnightBlue, new Point(20, y), new Size(800, 30));
             label.TextAlign = ContentAlignment.MiddleCenter;
             panelContenido.Controls.Add(label);
@@ -270,6 +310,7 @@ namespace TrabCalc
 
         private void AgregarSubtitulo(string texto, ref int y)
         {
+            documento.AgregarSubtitulo(texto);
             Label label = CrearLabel(texto, new Font("Arial", 13, FontStyle.Bold), Color.DarkGreen, new Point(20, y), new Size(800, 25));
             panelContenido.Controls.Add(label);
             y += label.Height + 5;
@@ -277,6 +318,7 @@ namespace TrabCalc
 
         private void AgregarTexto(string texto, ref int y)
         {
+            documento.AgregarTexto(texto);
             Label label = CrearLabel(texto, new Font("Arial", 12), Color.Black, new Point(30, y), new Size(790, 0));
             label.AutoSize = true;
             label.MaximumSize = new Size(790, 0);
@@ -286,6 +328,7 @@ namespace TrabCalc
 
         private void AgregarFormula(string latex, ref int y)
         {
+            documento.AgregarFormula(latex);
             Control formula = ProcedimientoVisual.CrearFormula(latex);
             formula.Location = new Point(50, y);
             panelContenido.Controls.Add(formula);
@@ -312,6 +355,7 @@ namespace TrabCalc
             int filaY = 38;
             foreach (var fila in filas)
             {
+                documento.AgregarTexto($"{fila.Key}: {fila.Value}");
                 resumen.Controls.Add(CrearLabel(fila.Key, new Font("Arial", 11), Color.Black, new Point(15, filaY), new Size(350, 22)));
                 resumen.Controls.Add(CrearLabel(fila.Value, new Font("Arial", 11, FontStyle.Bold), Color.Black, new Point(400, filaY), new Size(300, 22)));
                 filaY += altoFila;
@@ -339,6 +383,25 @@ namespace TrabCalc
             if (isAnimating) return;
             ReproductorSonido.Reproducir("snd/Salir.wav");
             IniciarFadeOut();
+        }
+
+        private void btnCopiar_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(documento.ATextoPlano());
+            DialogoApp.MostrarInformacion(this, "Procedimiento copiado al portapapeles.", "Copiar procedimiento");
+        }
+
+        private void btnPdf_Click(object sender, EventArgs e)
+        {
+            bool exportado = ExportadorProcedimiento.ExportarPdf(
+                this,
+                documento,
+                $"procedimiento_derivadas_{DateTime.Now:yyyyMMdd_HHmmss}");
+
+            if (exportado)
+            {
+                DialogoApp.MostrarInformacion(this, "Procedimiento exportado a PDF correctamente.", "Exportar procedimiento");
+            }
         }
 
         private void IniciarFadeOut()

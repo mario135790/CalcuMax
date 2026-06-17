@@ -26,13 +26,24 @@ namespace TrabCalc.Servicios.Historial
 
         public static void Agregar(string simulador, string tipo, string resultadoCorto, string resumen)
         {
+            Agregar(simulador, tipo, resultadoCorto, resumen, null);
+        }
+
+        public static void Agregar(
+            string simulador,
+            string tipo,
+            string resultadoCorto,
+            string resumen,
+            Dictionary<string, string> parametros)
+        {
             registros.Insert(0, new RegistroSimulacion
             {
                 Fecha = DateTime.Now,
                 Simulador = simulador,
                 Tipo = tipo,
                 ResultadoCorto = resultadoCorto,
-                Resumen = resumen
+                Resumen = resumen,
+                Parametros = parametros
             });
 
             if (registros.Count > LimiteRegistros)

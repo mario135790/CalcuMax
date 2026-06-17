@@ -134,7 +134,11 @@ namespace TrabCalc
             }
 
             PlaySound("snd/Error.mp3");
-            DialogoApp.MostrarAdvertencia(this, "Seleccione una figura.", "Campo requerido");
+            DialogoApp.MostrarAdvertencia(
+                this,
+                "Seleccione una figura." + Environment.NewLine + Environment.NewLine +
+                "La forma determina la formula de volumen y la relacion entre volumen y altura del agua.",
+                "Campo requerido");
             return false;
         }
 
@@ -143,7 +147,11 @@ namespace TrabCalc
             if (!EntradaNumerica.TryLeerDouble(textBox.Text, out valor))
             {
                 PlaySound("snd/Error.mp3");
-                DialogoApp.MostrarAdvertencia(this, $"El campo {nombre} no puede estar vacío.", "Campo requerido");
+                DialogoApp.MostrarAdvertencia(
+                    this,
+                    $"El campo {nombre} no puede estar vacio." + Environment.NewLine + Environment.NewLine +
+                    "Escribe una medida en metros. Puedes usar punto o coma decimal.",
+                    "Campo requerido");
                 textBox.Focus();
                 return false;
             }
@@ -151,7 +159,11 @@ namespace TrabCalc
             if (valor <= 0)
             {
                 PlaySound("snd/Error.mp3");
-                DialogoApp.MostrarAdvertencia(this, $"El campo {nombre} debe ser mayor que cero.", "Valor inválido");
+                DialogoApp.MostrarAdvertencia(
+                    this,
+                    $"El campo {nombre} debe ser mayor que cero." + Environment.NewLine + Environment.NewLine +
+                    "Las dimensiones se multiplican o elevan al cuadrado/cubo para calcular volumen; si son 0 o negativas, el recipiente no tiene sentido fisico.",
+                    "Valor invalido");
                 textBox.Focus();
                 return false;
             }

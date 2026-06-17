@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using TrabCalc.Servicios.Exportacion;
 
 namespace TrabCalc
 {
@@ -10,6 +11,7 @@ namespace TrabCalc
         private Panel panelContenido;
         private bool esAceleracionConstante;
         private Dictionary<string, double> parametros;
+        private readonly DocumentoProcedimiento documento = new DocumentoProcedimiento();
         private bool isAnimating;
 
         public void PlaySound(string filePath)
@@ -29,6 +31,7 @@ namespace TrabCalc
         private void MostrarProcedimiento()
         {
             panelContenido.Controls.Clear();
+            documento.Limpiar();
             int yPosition = 20;
 
             if (esAceleracionConstante)
@@ -304,6 +307,7 @@ namespace TrabCalc
 
         private void AgregarTitulo(string texto, ref int yPosition)
         {
+            documento.AgregarTitulo(texto);
             Label label = CrearLabel(texto, new Font("Arial", 15, FontStyle.Bold), Color.MidnightBlue, new Point(20, yPosition), new Size(800, 30));
             label.TextAlign = ContentAlignment.MiddleCenter;
             panelContenido.Controls.Add(label);
@@ -312,6 +316,7 @@ namespace TrabCalc
 
         private void AgregarSubtitulo(string texto, ref int yPosition)
         {
+            documento.AgregarSubtitulo(texto);
             Label label = CrearLabel(texto, new Font("Arial", 13, FontStyle.Bold), Color.DarkGreen, new Point(20, yPosition), new Size(800, 25));
             panelContenido.Controls.Add(label);
             yPosition += label.Height + 5;
@@ -319,6 +324,7 @@ namespace TrabCalc
 
         private void AgregarTexto(string texto, ref int yPosition)
         {
+            documento.AgregarTexto(texto);
             Label label = CrearLabel(texto, new Font("Arial", 12), Color.Black, new Point(30, yPosition), new Size(790, 0));
             label.AutoSize = true;
             label.MaximumSize = new Size(790, 0);
@@ -328,6 +334,7 @@ namespace TrabCalc
 
         private void AgregarFormula(string latex, ref int yPosition)
         {
+            documento.AgregarFormula(latex);
             Control formula = ProcedimientoVisual.CrearFormula(latex);
             formula.Location = new Point(50, yPosition);
             panelContenido.Controls.Add(formula);
@@ -356,6 +363,7 @@ namespace TrabCalc
             int y = 38;
             foreach (var fila in filas)
             {
+                documento.AgregarTexto($"{fila.Key}: {fila.Value}");
                 resumen.Controls.Add(CrearLabel(fila.Key, new Font("Arial", 11), Color.Black, new Point(15, y), new Size(350, 22)));
                 resumen.Controls.Add(CrearLabel(fila.Value, new Font("Arial", 11, FontStyle.Bold), Color.Black, new Point(400, y), new Size(300, 22)));
                 y += altoFila;
@@ -383,6 +391,25 @@ namespace TrabCalc
             if (isAnimating) return;
             PlaySound("snd/Salir.wav");
             IniciarFadeOut();
+        }
+
+        private void btnCopiarProcedimiento_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(documento.ATextoPlano());
+            DialogoApp.MostrarInformacion(this, "Procedimiento copiado al portapapeles.", "Copiar procedimiento");
+        }
+
+        private void btnExportarPdf_Click(object sender, EventArgs e)
+        {
+            bool exportado = ExportadorProcedimiento.ExportarPdf(
+                this,
+                documento,
+                $"procedimiento_integrales_{DateTime.Now:yyyyMMdd_HHmmss}");
+
+            if (exportado)
+            {
+                DialogoApp.MostrarInformacion(this, "Procedimiento exportado a PDF correctamente.", "Exportar procedimiento");
+            }
         }
 
         private void IniciarFadeOut()
