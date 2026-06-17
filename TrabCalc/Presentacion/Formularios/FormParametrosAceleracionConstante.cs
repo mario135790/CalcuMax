@@ -110,34 +110,39 @@ namespace TrabCalc
             };
         }
 
+        private void MostrarErrorParametro(Control control, string mensaje, string guia)
+        {
+            DialogoApp.MostrarError(
+                this,
+                mensaje + Environment.NewLine + Environment.NewLine + "Por que importa: " + guia,
+                "Valor a revisar");
+            control.Focus();
+        }
+
         private void BtnAplicar_Click(object sender, EventArgs e)
 {
     // Validaciones básicas de rangos
     if (nudMasa.Value <= 0)
     {
-        DialogoApp.MostrarError(this, "La masa debe ser mayor que cero.");
-        nudMasa.Focus();
+        MostrarErrorParametro(nudMasa, "La masa debe ser mayor que cero.", "La masa aparece en F = ma y en el trabajo del motor. Si vale 0 o menos, el vehiculo no representa un objeto fisico.");
         return;
     }
 
     if (nudTiempoTotal.Value <= 0)
     {
-        DialogoApp.MostrarError(this, "El tiempo total debe ser mayor que cero.");
-        nudTiempoTotal.Focus();
+        MostrarErrorParametro(nudTiempoTotal, "El tiempo total debe ser mayor que cero.", "La integral necesita un intervalo de tiempo. Con 0 segundos no hay recorrido que acumular.");
         return;
     }
 
     if (nudVelInicial.Value < 0)
     {
-        DialogoApp.MostrarError(this, "La velocidad inicial no puede ser negativa.");
-        nudVelInicial.Focus();
+        MostrarErrorParametro(nudVelInicial, "La velocidad inicial no puede ser negativa.", "Este simulador trabaja con avance en una sola direccion. Usa 0 km/h si el auto parte desde reposo.");
         return;
     }
 
     if (nudAceleracion.Value < 0)
     {
-        DialogoApp.MostrarError(this, "La aceleración no puede ser negativa.");
-        nudAceleracion.Focus();
+        MostrarErrorParametro(nudAceleracion, "La aceleracion no puede ser negativa.", "En este modo la aceleracion representa el empuje del motor hacia adelante. Un valor negativo seria otro tipo de movimiento.");
         return;
     }
 
@@ -158,8 +163,7 @@ namespace TrabCalc
     // Validaciones de coherencia física
     if (nudVelMaxima.Value < nudVelInicial.Value)
     {
-        DialogoApp.MostrarError(this, "La velocidad máxima no puede ser menor que la velocidad inicial.");
-        nudVelMaxima.Focus();
+        MostrarErrorParametro(nudVelMaxima, "La velocidad maxima no puede ser menor que la velocidad inicial.", "La velocidad maxima es el limite superior de la simulacion. Si empieza por encima del limite, el modelo no sabe hacia donde recortar.");
         return;
     }
 
@@ -236,15 +240,13 @@ namespace TrabCalc
     // Validación de valores decimales extremos
     if ((float)nudMasa.Value < 0.000001)
     {
-        DialogoApp.MostrarError(this, "La masa es demasiado pequeña para cálculos precisos (mínimo 0.000001 kg).");
-        nudMasa.Focus();
+        MostrarErrorParametro(nudMasa, "La masa es demasiado pequena para calculos precisos (minimo 0.000001 kg).", "Con una masa tan pequena, dividir fuerzas entre masa produce cambios enormes y poco estables numericamente.");
         return;
     }
 
     if ((float)nudTiempoTotal.Value < 0.001)
     {
-        DialogoApp.MostrarError(this, "El tiempo total es demasiado pequeño para cálculos precisos (mínimo 0.001 s).");
-        nudTiempoTotal.Focus();
+        MostrarErrorParametro(nudTiempoTotal, "El tiempo total es demasiado pequeno para calculos precisos (minimo 0.001 s).", "El simulador aproxima integrales en pasos. Un intervalo casi cero deja muy poco espacio para observar cambios.");
         return;
     }
 

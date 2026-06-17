@@ -34,6 +34,8 @@ namespace TrabCalc
             this.components = new System.ComponentModel.Container();
             this.panelContenido = new System.Windows.Forms.Panel();
             this.btnSalir = new Guna.UI2.WinForms.Guna2GradientButton();
+            this.btnCopiarProcedimiento = new Guna.UI2.WinForms.Guna2GradientButton();
+            this.btnExportarPdf = new Guna.UI2.WinForms.Guna2GradientButton();
             this.pb2 = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
@@ -76,11 +78,65 @@ namespace TrabCalc
             this.btnSalir.Text = "Volver";
             this.btnSalir.Click += new System.EventHandler(this.btnSalir_Click);
             // 
+            // btnCopiarProcedimiento
+            // 
+            this.btnCopiarProcedimiento.AutoRoundedCorners = true;
+            this.btnCopiarProcedimiento.BackColor = System.Drawing.Color.Transparent;
+            this.btnCopiarProcedimiento.BorderColor = System.Drawing.Color.RoyalBlue;
+            this.btnCopiarProcedimiento.BorderRadius = 23;
+            this.btnCopiarProcedimiento.BorderThickness = 3;
+            this.btnCopiarProcedimiento.CheckedState.Parent = this.btnCopiarProcedimiento;
+            this.btnCopiarProcedimiento.CustomImages.Parent = this.btnCopiarProcedimiento;
+            this.btnCopiarProcedimiento.FillColor = System.Drawing.Color.LightGray;
+            this.btnCopiarProcedimiento.FillColor2 = System.Drawing.Color.DodgerBlue;
+            this.btnCopiarProcedimiento.Font = new System.Drawing.Font("Arial", 18F);
+            this.btnCopiarProcedimiento.ForeColor = System.Drawing.Color.Black;
+            this.btnCopiarProcedimiento.HoverState.BorderColor = System.Drawing.Color.RoyalBlue;
+            this.btnCopiarProcedimiento.HoverState.FillColor = System.Drawing.Color.AliceBlue;
+            this.btnCopiarProcedimiento.HoverState.FillColor2 = System.Drawing.Color.DodgerBlue;
+            this.btnCopiarProcedimiento.HoverState.ForeColor = System.Drawing.Color.White;
+            this.btnCopiarProcedimiento.HoverState.Parent = this.btnCopiarProcedimiento;
+            this.btnCopiarProcedimiento.Location = new System.Drawing.Point(170, 617);
+            this.btnCopiarProcedimiento.Name = "btnCopiarProcedimiento";
+            this.btnCopiarProcedimiento.ShadowDecoration.Parent = this.btnCopiarProcedimiento;
+            this.btnCopiarProcedimiento.Size = new System.Drawing.Size(150, 49);
+            this.btnCopiarProcedimiento.TabIndex = 37;
+            this.btnCopiarProcedimiento.Text = "Copiar";
+            this.btnCopiarProcedimiento.Click += new System.EventHandler(this.btnCopiarProcedimiento_Click);
+            // 
+            // btnExportarPdf
+            // 
+            this.btnExportarPdf.AutoRoundedCorners = true;
+            this.btnExportarPdf.BackColor = System.Drawing.Color.Transparent;
+            this.btnExportarPdf.BorderColor = System.Drawing.Color.SeaGreen;
+            this.btnExportarPdf.BorderRadius = 23;
+            this.btnExportarPdf.BorderThickness = 3;
+            this.btnExportarPdf.CheckedState.Parent = this.btnExportarPdf;
+            this.btnExportarPdf.CustomImages.Parent = this.btnExportarPdf;
+            this.btnExportarPdf.FillColor = System.Drawing.Color.LightGray;
+            this.btnExportarPdf.FillColor2 = System.Drawing.Color.MediumSeaGreen;
+            this.btnExportarPdf.Font = new System.Drawing.Font("Arial", 18F);
+            this.btnExportarPdf.ForeColor = System.Drawing.Color.Black;
+            this.btnExportarPdf.HoverState.BorderColor = System.Drawing.Color.SeaGreen;
+            this.btnExportarPdf.HoverState.FillColor = System.Drawing.Color.AliceBlue;
+            this.btnExportarPdf.HoverState.FillColor2 = System.Drawing.Color.MediumSeaGreen;
+            this.btnExportarPdf.HoverState.ForeColor = System.Drawing.Color.White;
+            this.btnExportarPdf.HoverState.Parent = this.btnExportarPdf;
+            this.btnExportarPdf.Location = new System.Drawing.Point(330, 617);
+            this.btnExportarPdf.Name = "btnExportarPdf";
+            this.btnExportarPdf.ShadowDecoration.Parent = this.btnExportarPdf;
+            this.btnExportarPdf.Size = new System.Drawing.Size(150, 49);
+            this.btnExportarPdf.TabIndex = 38;
+            this.btnExportarPdf.Text = "PDF";
+            this.btnExportarPdf.Click += new System.EventHandler(this.btnExportarPdf_Click);
+            // 
             // pb2
             // 
             this.pb2.BorderColor = System.Drawing.Color.MidnightBlue;
             this.pb2.BorderRadius = 40;
             this.pb2.BorderThickness = 3;
+            this.pb2.Controls.Add(this.btnExportarPdf);
+            this.pb2.Controls.Add(this.btnCopiarProcedimiento);
             this.pb2.Controls.Add(this.btnSalir);
             this.pb2.Controls.Add(this.panelContenido);
             this.pb2.FillColor2 = System.Drawing.Color.CornflowerBlue;
@@ -125,6 +181,8 @@ namespace TrabCalc
         #endregion
 
         private Guna.UI2.WinForms.Guna2GradientButton btnSalir;
+        private Guna.UI2.WinForms.Guna2GradientButton btnCopiarProcedimiento;
+        private Guna.UI2.WinForms.Guna2GradientButton btnExportarPdf;
         private Guna.UI2.WinForms.Guna2CustomGradientPanel pb2;
         private Timer timer1;
         private Timer timer2;

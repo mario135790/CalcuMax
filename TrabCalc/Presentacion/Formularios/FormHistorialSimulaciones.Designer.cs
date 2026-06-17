@@ -19,6 +19,7 @@ namespace TrabCalc
         {
             this.pnlContenedor = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
             this.btnCerrar = new Guna.UI2.WinForms.Guna2GradientButton();
+            this.btnReabrir = new Guna.UI2.WinForms.Guna2GradientButton();
             this.btnExportar = new Guna.UI2.WinForms.Guna2GradientButton();
             this.btnLimpiar = new Guna.UI2.WinForms.Guna2GradientButton();
             this.btnCopiar = new Guna.UI2.WinForms.Guna2GradientButton();
@@ -37,6 +38,7 @@ namespace TrabCalc
             this.pnlContenedor.BorderRadius = 34;
             this.pnlContenedor.BorderThickness = 3;
             this.pnlContenedor.Controls.Add(this.btnCerrar);
+            this.pnlContenedor.Controls.Add(this.btnReabrir);
             this.pnlContenedor.Controls.Add(this.btnExportar);
             this.pnlContenedor.Controls.Add(this.btnLimpiar);
             this.pnlContenedor.Controls.Add(this.btnCopiar);
@@ -76,10 +78,36 @@ namespace TrabCalc
             this.btnCerrar.Location = new System.Drawing.Point(29, 363);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.ShadowDecoration.Parent = this.btnCerrar;
-            this.btnCerrar.Size = new System.Drawing.Size(128, 45);
+            this.btnCerrar.Size = new System.Drawing.Size(112, 45);
             this.btnCerrar.TabIndex = 5;
             this.btnCerrar.Text = "Volver";
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
+            // 
+            // btnReabrir
+            // 
+            this.btnReabrir.AutoRoundedCorners = true;
+            this.btnReabrir.BackColor = System.Drawing.Color.Transparent;
+            this.btnReabrir.BorderColor = System.Drawing.Color.RoyalBlue;
+            this.btnReabrir.BorderRadius = 21;
+            this.btnReabrir.BorderThickness = 3;
+            this.btnReabrir.CheckedState.Parent = this.btnReabrir;
+            this.btnReabrir.CustomImages.Parent = this.btnReabrir;
+            this.btnReabrir.FillColor = System.Drawing.Color.LightGray;
+            this.btnReabrir.FillColor2 = System.Drawing.Color.DodgerBlue;
+            this.btnReabrir.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
+            this.btnReabrir.ForeColor = System.Drawing.Color.Black;
+            this.btnReabrir.HoverState.BorderColor = System.Drawing.Color.RoyalBlue;
+            this.btnReabrir.HoverState.FillColor = System.Drawing.Color.AliceBlue;
+            this.btnReabrir.HoverState.FillColor2 = System.Drawing.Color.DodgerBlue;
+            this.btnReabrir.HoverState.ForeColor = System.Drawing.Color.White;
+            this.btnReabrir.HoverState.Parent = this.btnReabrir;
+            this.btnReabrir.Location = new System.Drawing.Point(149, 363);
+            this.btnReabrir.Name = "btnReabrir";
+            this.btnReabrir.ShadowDecoration.Parent = this.btnReabrir;
+            this.btnReabrir.Size = new System.Drawing.Size(112, 45);
+            this.btnReabrir.TabIndex = 9;
+            this.btnReabrir.Text = "Reabrir";
+            this.btnReabrir.Click += new System.EventHandler(this.btnReabrir_Click);
             // 
             // btnExportar
             // 
@@ -99,10 +127,10 @@ namespace TrabCalc
             this.btnExportar.HoverState.FillColor2 = System.Drawing.Color.MediumSeaGreen;
             this.btnExportar.HoverState.ForeColor = System.Drawing.Color.White;
             this.btnExportar.HoverState.Parent = this.btnExportar;
-            this.btnExportar.Location = new System.Drawing.Point(317, 363);
+            this.btnExportar.Location = new System.Drawing.Point(269, 363);
             this.btnExportar.Name = "btnExportar";
             this.btnExportar.ShadowDecoration.Parent = this.btnExportar;
-            this.btnExportar.Size = new System.Drawing.Size(128, 45);
+            this.btnExportar.Size = new System.Drawing.Size(112, 45);
             this.btnExportar.TabIndex = 8;
             this.btnExportar.Text = "Exportar";
             this.btnExportar.Click += new System.EventHandler(this.btnExportar_Click);
@@ -125,10 +153,10 @@ namespace TrabCalc
             this.btnLimpiar.HoverState.FillColor2 = System.Drawing.Color.IndianRed;
             this.btnLimpiar.HoverState.ForeColor = System.Drawing.Color.White;
             this.btnLimpiar.HoverState.Parent = this.btnLimpiar;
-            this.btnLimpiar.Location = new System.Drawing.Point(461, 363);
+            this.btnLimpiar.Location = new System.Drawing.Point(501, 363);
             this.btnLimpiar.Name = "btnLimpiar";
             this.btnLimpiar.ShadowDecoration.Parent = this.btnLimpiar;
-            this.btnLimpiar.Size = new System.Drawing.Size(128, 45);
+            this.btnLimpiar.Size = new System.Drawing.Size(112, 45);
             this.btnLimpiar.TabIndex = 4;
             this.btnLimpiar.Text = "Limpiar";
             this.btnLimpiar.Click += new System.EventHandler(this.btnLimpiar_Click);
@@ -151,10 +179,10 @@ namespace TrabCalc
             this.btnCopiar.HoverState.FillColor2 = System.Drawing.Color.DodgerBlue;
             this.btnCopiar.HoverState.ForeColor = System.Drawing.Color.White;
             this.btnCopiar.HoverState.Parent = this.btnCopiar;
-            this.btnCopiar.Location = new System.Drawing.Point(604, 363);
+            this.btnCopiar.Location = new System.Drawing.Point(621, 363);
             this.btnCopiar.Name = "btnCopiar";
             this.btnCopiar.ShadowDecoration.Parent = this.btnCopiar;
-            this.btnCopiar.Size = new System.Drawing.Size(128, 45);
+            this.btnCopiar.Size = new System.Drawing.Size(112, 45);
             this.btnCopiar.TabIndex = 3;
             this.btnCopiar.Text = "Copiar";
             this.btnCopiar.Click += new System.EventHandler(this.btnCopiar_Click);
@@ -261,6 +289,7 @@ namespace TrabCalc
 
         private Guna.UI2.WinForms.Guna2CustomGradientPanel pnlContenedor;
         private Guna.UI2.WinForms.Guna2GradientButton btnCerrar;
+        private Guna.UI2.WinForms.Guna2GradientButton btnReabrir;
         private Guna.UI2.WinForms.Guna2GradientButton btnExportar;
         private Guna.UI2.WinForms.Guna2GradientButton btnLimpiar;
         private Guna.UI2.WinForms.Guna2GradientButton btnCopiar;

@@ -1,7 +1,9 @@
 using Guna.UI2.WinForms;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -377,21 +379,33 @@ namespace TrabCalc
             if (!figDibujada || figura == null)
             {
                 PlaySound("snd/Error.mp3");
-                DialogoApp.MostrarAdvertencia(this, "Primero seleccione un recipiente.", "Error");
+                DialogoApp.MostrarAdvertencia(
+                    this,
+                    "Primero seleccione un recipiente." + Environment.NewLine + Environment.NewLine +
+                    "El simulador necesita conocer la forma y sus dimensiones para calcular volumen, area transversal y altura del agua.",
+                    "Dato requerido");
                 return;
             }
 
             if (cmbQueHace.SelectedIndex == -1)
             {
                 PlaySound("snd/Error.mp3");
-                DialogoApp.MostrarAdvertencia(this, "Seleccione si el recipiente se llena o se vacía.", "Error");
+                DialogoApp.MostrarAdvertencia(
+                    this,
+                    "Seleccione si el recipiente se llena o se vacia." + Environment.NewLine + Environment.NewLine +
+                    "Esta opcion decide el signo del cambio: llenar aumenta el volumen y drenar lo disminuye.",
+                    "Dato requerido");
                 return;
             }
 
             if (!EntradaNumerica.TryLeerDouble(txtRazon.Text, out double razon) || razon <= 0)
             {
                 PlaySound("snd/Error.mp3");
-                DialogoApp.MostrarAdvertencia(this, "El caudal debe ser mayor que cero.", "Error");
+                DialogoApp.MostrarAdvertencia(
+                    this,
+                    "El caudal debe ser mayor que cero." + Environment.NewLine + Environment.NewLine +
+                    "El caudal indica cuantos metros cubicos cambian por minuto. Con 0 o menos no hay cambio real de volumen.",
+                    "Valor a revisar");
                 return;
             }
 
@@ -403,7 +417,11 @@ namespace TrabCalc
             if (tiempo <= 0)
             {
                 PlaySound("snd/Error.mp3");
-                DialogoApp.MostrarAdvertencia(this, "No hay volumen disponible para simular con la operación seleccionada.", "Error");
+                DialogoApp.MostrarAdvertencia(
+                    this,
+                    "No hay volumen disponible para simular con la operacion seleccionada." + Environment.NewLine + Environment.NewLine +
+                    "Por ejemplo, no se puede llenar un recipiente que ya esta al 100%, ni drenar uno que esta vacio.",
+                    "Operacion sin recorrido");
                 return;
             }
 
@@ -556,7 +574,167 @@ namespace TrabCalc
         {
             string tipo = $"{parametrosRecipienteProcedimiento.NombreFigura} - {parametrosRecipienteProcedimiento.NombreOperacion}";
             string resultadoCorto = $"Tiempo: {FormatoUnidades.TiempoSegundos(parametrosRecipienteProcedimiento.TiempoTotal)} | Volumen final: {FormatoUnidades.Volumen(parametrosRecipienteProcedimiento.VolumenFinal, 4)}";
-            HistorialSimulaciones.Agregar("Derivadas", tipo, resultadoCorto, ConstruirResumenResultados());
+            HistorialSimulaciones.Agregar("Derivadas", tipo, resultadoCorto, ConstruirResumenResultados(), ConstruirParametrosHistorial());
+        }
+
+        private Dictionary<string, string> ConstruirParametrosHistorial()
+        {
+            Dictionary<string, string> parametros = new Dictionary<string, string>
+            {
+                { "origen", "recipiente" },
+                { "operacion", operacionActual.ToString(CultureInfo.InvariantCulture) },
+                { "caudalPorMinuto", GuardarNumero(caudalPorMinuto) },
+                { "volumenInicial", GuardarNumero(parametrosRecipienteProcedimiento?.VolumenInicial ?? figura?.VolumenActual ?? 0) }
+            };
+
+            if (figura is Cilindro cilindro)
+            {
+                parametros["figuraTipo"] = "cilindro";
+                parametros["radio"] = GuardarNumero(cilindro.Radio);
+                parametros["altura"] = GuardarNumero(cilindro.Altura);
+            }
+            else if (figura is Esfera esfera)
+            {
+                parametros["figuraTipo"] = "esfera";
+                parametros["radio"] = GuardarNumero(esfera.Radio);
+            }
+            else if (figura is Cisterna cisterna)
+            {
+                parametros["figuraTipo"] = "cisterna";
+                parametros["largo"] = GuardarNumero(cisterna.Largo);
+                parametros["ancho"] = GuardarNumero(cisterna.Ancho);
+                parametros["altura"] = GuardarNumero(cisterna.Altura);
+            }
+
+            return parametros;
+        }
+
+        public bool ReabrirDesdeHistorial(RegistroSimulacion registro)
+        {
+            if (registro == null || !registro.TieneParametros)
+            {
+                return false;
+            }
+
+            if (!TryCrearFiguraDesdeHistorial(registro, out Figura3D figuraRecuperada)
+                || !TryLeerEnteroParametro(registro, "operacion", out int operacionGuardada)
+                || !TryLeerParametro(registro, "caudalPorMinuto", out double caudalGuardado)
+                || !TryLeerParametro(registro, "volumenInicial", out double volumenInicialGuardado))
+            {
+                return false;
+            }
+
+            ForceStop();
+            figura = figuraRecuperada;
+            figura.VolumenActual = volumenInicialGuardado;
+            figura.AnimacionLiquidoActiva = false;
+            figura.Drenando = operacionGuardada == CalculadoraRecipientes.OperacionDrenado;
+            figDibujada = true;
+            operacionActual = operacionGuardada;
+            caudalPorMinuto = caudalGuardado;
+            caudalPorSegundo = CalculadoraRecipientes.CalcularCaudalPorSegundo(caudalPorMinuto);
+            txtRazon.Text = FormatoUnidades.Numero(caudalPorMinuto, 6);
+
+            if (cmbQueHace.Items.Count > operacionGuardada && operacionGuardada >= 0)
+            {
+                cmbQueHace.SelectedIndex = operacionGuardada;
+            }
+
+            CalcularTiempo();
+            parametrosRecipienteProcedimiento = CrearParametrosRecipiente();
+            tiempoTranscurrido = 0;
+            isPaused = false;
+            simulacionActiva = false;
+            relojSimulacion.Reset();
+            label12.Text = "00:00:00";
+            button1.Text = "Simular";
+            btnPausa.Enabled = false;
+            btnPausa.Text = "Pausar";
+            btnMostrarProcedimiento.Visible = false;
+            btnMostrarProcedimiento.Enabled = false;
+            btnExportarResultados.Visible = false;
+            btnExportarResultados.Enabled = false;
+            btnCopiarResultados.Visible = false;
+            btnCopiarResultados.Enabled = false;
+            lblSimulacionCompletada.Visible = false;
+            ConfigurarEntradasSimulacion(true);
+            ActualizarDatos();
+            ActualizarEstadoCaudal();
+            figura.dibujarFigura();
+            DialogoApp.MostrarInformacion(this, "Simulacion reabierta. Puedes ajustar el caudal o volver a simular.", "Historial");
+            return true;
+        }
+
+        private bool TryCrearFiguraDesdeHistorial(RegistroSimulacion registro, out Figura3D figuraRecuperada)
+        {
+            figuraRecuperada = null;
+            if (!TryObtenerParametro(registro, "figuraTipo", out string figuraTipo))
+            {
+                return false;
+            }
+
+            if (string.Equals(figuraTipo, "cilindro", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!TryLeerParametro(registro, "radio", out double radio)
+                    || !TryLeerParametro(registro, "altura", out double altura))
+                {
+                    return false;
+                }
+
+                figuraRecuperada = new Cilindro(radio, altura, panel1);
+                return true;
+            }
+
+            if (string.Equals(figuraTipo, "esfera", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!TryLeerParametro(registro, "radio", out double radio))
+                {
+                    return false;
+                }
+
+                figuraRecuperada = new Esfera(radio, panel1);
+                return true;
+            }
+
+            if (string.Equals(figuraTipo, "cisterna", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!TryLeerParametro(registro, "largo", out double largo)
+                    || !TryLeerParametro(registro, "ancho", out double ancho)
+                    || !TryLeerParametro(registro, "altura", out double altura))
+                {
+                    return false;
+                }
+
+                figuraRecuperada = new Cisterna(largo, ancho, altura, panel1);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool TryObtenerParametro(RegistroSimulacion registro, string clave, out string valor)
+        {
+            valor = null;
+            return registro.Parametros != null && registro.Parametros.TryGetValue(clave, out valor);
+        }
+
+        private bool TryLeerParametro(RegistroSimulacion registro, string clave, out double valor)
+        {
+            valor = 0;
+            return TryObtenerParametro(registro, clave, out string texto)
+                && double.TryParse(texto, NumberStyles.Float, CultureInfo.InvariantCulture, out valor);
+        }
+
+        private bool TryLeerEnteroParametro(RegistroSimulacion registro, string clave, out int valor)
+        {
+            valor = 0;
+            return TryObtenerParametro(registro, clave, out string texto)
+                && int.TryParse(texto, NumberStyles.Integer, CultureInfo.InvariantCulture, out valor);
+        }
+
+        private string GuardarNumero(double valor)
+        {
+            return valor.ToString("R", CultureInfo.InvariantCulture);
         }
 
         private void ConfigurarEntradasSimulacion(bool habilitar)
@@ -820,7 +998,7 @@ namespace TrabCalc
                 return;
             }
 
-            using (FormHistorialSimulaciones historial = new FormHistorialSimulaciones())
+            using (FormHistorialSimulaciones historial = new FormHistorialSimulaciones(this))
             {
                 historial.ShowDialog(this);
             }
